@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Main Page</title>
+</head>
+	{% if color == 'white'%}
+	<style> body{
+		background-color: #FFFFFF;
+		color: #000000;
+	}
+	</style>
+	{% elif color %}
+	<style> body{
+		background-color: #000000;
+		color: #FFFFFF;
+	}
+	</style>
+	{% endif %}
+
+<body>
+	{% if message %}
+		<h2>System Message: {{message}}	</h2>
+	{% endif %}
+
+	<form action="/" method="post">
+		<fieldset>
+			<legend>Add Person</legend>
+			<input type="hidden" name="action" value="addPerson">
+			First Name:*<br>
+			<input type="text" name="firstName"><br>
+			Last Name:*<br>
+			<input type="text" name="lastName"><br>
+			Birthday:*<br>
+			<input type="date" name="dob" {% if time %} value={{time}}{% else %} value="0001-01-01"> {% endif %}<br>
+		</fieldset>
+		<legend>
+			<input type="submit" value="Submit">
+		</legend>
+	</form>
+
+	<form action="{{upload_url}}" method="post" enctype="multipart/form-data">
+		<fieldset>
+			<legend>Upload New Photo</legend>
+			<input type="hidden" name="action" value="uploadPhoto">
+			Photo Name:*<br>
+			<input type="text" name="photoname"><br>
+			Date of Photo:*<br>
+			<input type="date" name="photodate"{% if time %} value={{time}}{% else %} value="0001-01-01"> {% endif %}><br>
+			Image File:*<br>
+			<input type="file" name="imagefile" accept=".png,.jpg,.jpeg"><br>
+			{% if people|length > 0 %}
+			<fieldset>
+				<legend>Tag People</legend>
+				{% for i in people %}
+				<input type="checkbox" name="peoples[]" value="{{i.key}}"><label>{{i.name}}</label>
+				{% endfor %}
+			</fieldset>
+			{% endif %}
+		</fieldset>
+		<legend>
+			<input type="submit" value="Submit">
+		</legend>
+	</form>
+
+	<form method="post" action = "/">
+		<fieldset>
+			<legend>Change Color</legend>
+			<input type="hidden" name="action" value="changeColor">
+			<input type="radio" name="color_action" value="white"{% if color == 'white' %} checked="checked"{% endif %}>White<br>
+			<input type="radio" name="color_action" value="black" {% if color == 'black' %} checked="checked"{% endif %}>Black<br>
+		</fieldset>	
+		<legend>
+			<input type="submit" value="Change Color">
+		</legend>
+	</form>
+
+	{% if photos|length > 0 %}
+	<h2>Photos (Click Photo to Edit)</h2>
+		{% for i in photos %}
+			<h2>{{ i.photoname }}</h2>
+			<a href='/edit?key={{i.key}}&type=photo'><img src="{{ i.img_url }}"></a><br>
+			Date of Photo (YYYY-MM-DD): {{i.photodate}}<br><br>
+			People in Photo:<br>
+			{% for x in i.taggedPeople%}
+				{% for y in people %}
+					{% if x == y.id %}
+						{{y.name}}<br>
+					{% endif %}
+				{% endfor %}
+			{% endfor %}
+		{% endfor %}
+	{% endif %}
+
+	{% if people|length > 0 %}
+	<h2>People (Click Name to Edit)</h2>
+		{% for i in people %}
+			<a href='/edit?key={{i.key}}&type=person'>{{i.name}}</a>
+			Birthday: {{i.dob}}<br>
+		{% endfor %}
+	{% endif %}	
+
+</body>
+</html>
+

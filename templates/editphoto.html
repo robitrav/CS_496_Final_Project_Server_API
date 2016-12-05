@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+	{% if photo %}
+		<title>Edit {{photo.photoName}}</title>
+	{% else %}
+		<title>Could Not Find Photo</title>
+	{% endif %}
+</head>
+<body>
+
+	{% if message %}
+		<h2>System Message: {{message}}	</h2>
+	{% endif %}
+
+	{% if img_url %}
+	<img src="{{ img_url }}">
+	{% endif %}
+	<form method="POST" action="{{edit_url}}">
+		<fieldset>
+			<legend>Edit Tagged People</legend>
+			<input type="hidden" name="key" value="photo.key.urlsafe()">
+			{% for i in taggedpeople %}
+			<input type="checkbox" name="people[]" value="{{i.key}}" {% if i.checked %}checked="{{i.checked}}"{% endif %}><label>{{i.name}}</label>
+			{% endfor %}
+			<br>Date of Photo:<br>
+			<input type="date" name="photodate" value="{{photo.photoDate}}"><br>
+		</fieldset>
+		<legend>
+			<input type="submit" name="action" value="Edit">
+		</legend>
+		<legend>
+			<input type="submit" name="action" value="Edit and Return to Main">
+		</legend>
+	</form>
+</body>
+</html>
